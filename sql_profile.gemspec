@@ -3,7 +3,7 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = "gem_template"
+  spec.name          = "sql_profile"
   spec.version       = "0.0.1"
   spec.authors       = [""]
   spec.email         = [""]

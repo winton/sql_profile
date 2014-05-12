@@ -1,1 +1,3 @@
-require File.expand_path('../../lib/gem_template', __FILE__)
+require File.expand_path('../../lib/sql_profile', __FILE__)
+
+::ActiveRecord::ConnectionAdapters::AbstractAdapter.send(:include, SqlProfile)

@@ -1,42 +1,19 @@
-##GemTemplate
+##SqlProfile
 
-A gem template for new Ruby projects.
-
-###Goals
-
-* Use widely accepted practices and libraries
-* Automate the creation and renaming of projects
-* Projects share git history for easy updates
-* Add functionality through template [branches](https://github.com/winton/gem_template/branches)
+Records statistics about SQL queries in a running Rails 2.x app.
 
 ###Install
 
-    gem install gem_template
-
-###Create a new project
-
-	gem_template [project_name] [branch]...
-
-###Available branches
-
-* master
-* active_wrapper
-* rails
-* sinatra
-* sinatra-activerecord
-* sinatra-activerecord-authlogic
-* spec-activerecord
-* spec-framework
-* stasis
+    gem install sql_profile
 
 ### Contribute
 
-[Create an issue](https://github.com/winton/gem_template/issues/new) to discuss template changes.
+[Create an issue](https://github.com/winton/sql_profile/issues/new) to discuss template changes.
 
 Pull requests for template changes and new branches are even better.
 
 ### Stay up to date
 
-[Star this project](https://github.com/winton/gem_template#) on Github.
+[Star this project](https://github.com/winton/sql_profile#) on Github.
 
 [Follow Winton Welsh](http://twitter.com/intent/user?screen_name=wintonius) on Twitter.
