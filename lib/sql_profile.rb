@@ -3,8 +3,9 @@ $:.unshift File.dirname(__FILE__)
 module SqlProfile
 
   mattr_accessor :controller
-  mattr_accessor :data
+  mattr_accessor :redis
   mattr_accessor :segment
+  mattr_accessor :version
   
   def self.append_features(klass)
     super
@@ -17,32 +18,30 @@ module SqlProfile
     end
   end
 
-  def self.around_filter(controller, segment=nil)
+  def self.around_filter(controller, segment='default')
     self.controller = controller
     self.segment    = segment
     yield
   ensure
     self.controller = nil
     self.segment    = nil
-
-    Rails.logger.info "!"*50
-    Rails.logger.info self.data.pretty_inspect
   end
 
   def add_explains(explains)
     path     = SqlProfile.controller.request.path
     segment  = SqlProfile.segment
-    
-    SqlProfile.data                ||= {}
-    SqlProfile.data[path]          ||= {}
-    SqlProfile.data[path][segment] ||= []
-    SqlProfile.data[path][segment]  << explains
+    version  = SqlProfile.version ||= `cd #{Rails.root} && git rev-parse HEAD`.strip
+
+    redis.rpush("sql_profile:versions:#{version}:paths:#{path}:segments:#{segment}", explains.to_json)
+    redis.sadd("sql_profile:versions", version)
+    redis.sadd("sql_profile:versions:#{version}:paths", path)
+    redis.sadd("sql_profile:versions:#{version}:paths:#{path}:segments", segment)
   end
   
   def log_info_with_profile(sql, name, runtime)
     log_info_without_profile(sql, name, runtime)
 
-    return unless SqlProfile.controller
+    return unless SqlProfile.controller && redis
     return unless /^\s*(SELECT|UPDATE|INSERT|DELETE|REPLACE)/i =~ sql
 
     results  = ActiveRecord::Base.connection.execute("EXPLAIN #{sql}")
@@ -54,5 +53,9 @@ module SqlProfile
     end
 
     add_explains(explains)
+  end
+
+  def redis
+    SqlProfile.redis
   end
 end
