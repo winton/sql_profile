@@ -20,11 +20,13 @@ Record EXPLAIN data for SQL queries in a running Rails 2.x app.
 
 Now activate recording of EXPLAIN data by adding the `sql_profile` parameter:
 
-    /my_page?sql_profile=my_segment
+    /my_page?sql_profile=My+Page:Segment
+
+The `sql_profile` value should be in "Page:Segment" format.
 
 ###Results
 
-SqlProfile [writes EXPLAIN data to redis](https://github.com/winton/sql_profile/blob/07f89c0ac44b39576a6734aab3c7dc6564b10dee/lib/sql_profile.rb#L35-38) by git version, path, and segment.
+SqlProfile [writes EXPLAIN data to redis](https://github.com/winton/sql_profile/blob/07f89c0ac44b39576a6734aab3c7dc6564b10dee/lib/sql_profile.rb#L35-38) by git version and segment.
 
 This allows you to potentially compare EXPLAINs across multiple versions of your code.
 

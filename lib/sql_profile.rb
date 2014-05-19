@@ -32,10 +32,14 @@ module SqlProfile
     segment  = SqlProfile.segment
     version  = SqlProfile.version ||= `cd #{Rails.root} && git rev-parse HEAD`.strip
 
-    redis.rpush("sql_profile:versions:#{version}:paths:#{path}:segments:#{segment}", explains.to_json)
-    redis.sadd("sql_profile:versions", version)
-    redis.sadd("sql_profile:versions:#{version}:paths", path)
-    redis.sadd("sql_profile:versions:#{version}:paths:#{path}:segments", segment)
+    redis.rpush("sql_profile:segments:#{segment}:versions:#{version}:explains", explains.to_json)
+    redis.rpush("sql_profile:segments:#{segment}:versions:#{version}:caller", caller.to_json)
+
+    unless redis.lrange("sql_profile:segments:#{segment}:versions", -1, -1).include?(version)
+      redis.rpush("sql_profile:segments:#{segment}:versions", version)
+    end
+    
+    redis.sadd("sql_profile:segments", segment)
   end
   
   def log_info_with_profile(sql, name, runtime)
