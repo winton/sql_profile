@@ -33,9 +33,9 @@ module SqlProfile
     version  = SqlProfile.version ||= `cd #{Rails.root} && git rev-parse HEAD`.strip
 
     redis.rpush("sql_profile:segments:#{segment}:versions:#{version}", {
-      caller:   caller,
-      explains: explains,
-      sql:      sql
+      :caller   => caller,
+      :explains => explains,
+      :sql      => sql
     }.to_json)
 
     unless redis.lrange("sql_profile:segments:#{segment}:versions", -1, -1).include?(version)
