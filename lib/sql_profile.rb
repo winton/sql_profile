@@ -18,7 +18,7 @@ module SqlProfile
     end
   end
 
-  def self.around_filter(controller, segment='default')
+  def self.around_filter(controller, segment)
     self.controller = controller
     self.segment    = segment
     yield
@@ -27,13 +27,16 @@ module SqlProfile
     self.segment    = nil
   end
 
-  def add_explains(explains)
+  def add_explains(sql, explains)
     path     = SqlProfile.controller.request.path
     segment  = SqlProfile.segment
     version  = SqlProfile.version ||= `cd #{Rails.root} && git rev-parse HEAD`.strip
 
-    redis.rpush("sql_profile:segments:#{segment}:versions:#{version}:explains", explains.to_json)
-    redis.rpush("sql_profile:segments:#{segment}:versions:#{version}:caller", caller.to_json)
+    redis.rpush("sql_profile:segments:#{segment}:versions:#{version}", {
+      caller:   caller,
+      explains: explains,
+      sql:      sql
+    }.to_json)
 
     unless redis.lrange("sql_profile:segments:#{segment}:versions", -1, -1).include?(version)
       redis.rpush("sql_profile:segments:#{segment}:versions", version)
@@ -56,7 +59,7 @@ module SqlProfile
       explains << explain
     end
 
-    add_explains(explains)
+    add_explains(sql, explains)
   end
 
   def redis
